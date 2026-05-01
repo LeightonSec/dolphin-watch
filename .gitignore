@@ -1,0 +1,5 @@
+reports/
+logs/
+*.pcap
+__pycache__/
+*.pyc
