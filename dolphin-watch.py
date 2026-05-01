@@ -48,15 +48,58 @@ BASELINE_ENDPOINTS: frozenset[str] = frozenset({
     "POST /encrypt",
     "POST /createAction",
     "POST /listCertificates",  # present in baseline PCAP, treated as known-good
-    "OPTIONS /createSignature",
-    "OPTIONS /verifyHmac",
-    "OPTIONS /verifySignature",
+    # Action lifecycle
+    "POST /signAction",
+    "POST /abortAction",
+    "POST /listActions",
     "POST /relinquishOutput",
     "POST /internalizeAction",
+    # Crypto / key management
     "POST /createHmac",
+    "POST /decrypt",
     "POST /proveCertificate",
-    "GET /status",
+    "POST /acquireCertificate",
+    "POST /revealCounterpartyKeyLinkage",  # BRC-69 audit
+    "POST /revealSpecificKeyLinkage",      # BRC-69 audit
+    # Identity discovery (BRC-56)
+    "POST /discoverByIdentityKey",
+    "POST /discoverByAttributes",
+    # Conversations
+    "GET /conversations",
+    "POST /listConversations",
     "GET /conversations/{id}",  # normalised form; raw UUIDs are replaced at parse time
+    # MessageBox (BRC-33)
+    "POST /sendMessage",
+    "POST /listIncomingTransactions",
+    "POST /acknowledgeMessage",
+    # Status
+    "GET /status",
+    # OPTIONS CORS preflight — web UI sends these before every wallet API call
+    "OPTIONS /chat",
+    "OPTIONS /createSignature",
+    "OPTIONS /verifySignature",
+    "OPTIONS /verifyHmac",
+    "OPTIONS /createHmac",
+    "OPTIONS /getPublicKey",
+    "OPTIONS /encrypt",
+    "OPTIONS /decrypt",
+    "OPTIONS /createAction",
+    "OPTIONS /signAction",
+    "OPTIONS /abortAction",
+    "OPTIONS /listOutputs",
+    "OPTIONS /listActions",
+    "OPTIONS /listCertificates",
+    "OPTIONS /proveCertificate",
+    "OPTIONS /acquireCertificate",
+    "OPTIONS /internalizeAction",
+    "OPTIONS /relinquishOutput",
+    "OPTIONS /discoverByIdentityKey",
+    "OPTIONS /discoverByAttributes",
+    "OPTIONS /sendMessage",
+    "OPTIONS /listIncomingTransactions",
+    "OPTIONS /acknowledgeMessage",
+    "OPTIONS /revealCounterpartyKeyLinkage",
+    "OPTIONS /revealSpecificKeyLinkage",
 })
 
 # Expected call rates (calls/minute) derived from baseline PCAP analysis
