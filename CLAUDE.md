@@ -1,7 +1,7 @@
 # CLAUDE.md — dolphin-watch
 
 PCAP-based defensive traffic monitor for BSV-native AI agents running on dolphin-milk.
-Parses PCAP files offline, extracts HTTP endpoints, detects anomalies against a signed
+Parses PCAP files offline, extracts HTTP endpoints, detects anomalies against an immutable
 baseline, and produces structured JSON reports.
 
 Zero network calls. Zero external dependencies. Zero payload logging.
@@ -31,7 +31,7 @@ Zero network calls. Zero external dependencies. Zero payload logging.
 | # | Rule | Severity | Trigger |
 |---|------|----------|---------|
 | 1 | External IP | HIGH | Any non-localhost IP in agent traffic |
-| 2 | Unknown endpoint | HIGH | HTTP request not in signed baseline frozenset |
+| 2 | Unknown endpoint | HIGH | HTTP request not in baseline frozenset |
 | 3 | Agentic danger endpoint | HIGH | POST /spawn_agent, /delegate_task, /execute_bash |
 | 4 | Budget polling too fast | HIGH | GET /budget interval < 3s (normal) / 10s (strict) |
 | 5 | createSignature hard cap | HIGH | POST /createSignature exceeds 150 RPM |
@@ -57,7 +57,7 @@ Zero network calls. Zero external dependencies. Zero payload logging.
 
 ## Security Design — Critical — Do Not Change Without Review
 
-- **Signed baseline** — `BASELINE_ENDPOINTS` is a `frozenset` — immutable at runtime
+- **Immutable baseline** — `BASELINE_ENDPOINTS` is a `frozenset` — immutable at runtime (hardcoded in source, not cryptographically signed)
 - **Input validation** — PCAP rejected if >100MB, invalid magic, not a regular file
 - **Packet cap** — iteration hard-capped at 2,000,000 packets
 - **Endpoint sanitisation** — method allowlist, safe path character allowlist (256 char max)
@@ -80,7 +80,7 @@ Zero network calls. Zero external dependencies. Zero payload logging.
 ✅ Polling interval tracking (_IntervalTracker)
 ✅ Sequence constraint enforcement (agent → chat → task)
 ✅ Agentic danger endpoint detection
-✅ Signed frozenset baseline — 50+ known-good endpoints including OPTIONS CORS preflights
+✅ Immutable frozenset baseline — 58 known-good endpoints including OPTIONS CORS preflights
 ✅ Normal and strict modes for /budget thresholds
 ✅ Stdout summary line suitable for piping to Incident Tracker
 ✅ Calibrated against live dolphin-milk baseline PCAP traffic
@@ -121,6 +121,31 @@ Use strict mode for production alerting where false negatives are unacceptable.
 
 - Python 3.10+ (stdlib only)
 - Shell (capture-baseline.sh)
+
+---
+
+## Development & CI
+
+The **runtime tool stays stdlib-only** — `dolphin-watch.py` imports nothing
+outside the standard library, and that is a deliberate security decision (see
+Security Rules). The "no external dependencies" rule governs runtime, not the
+development toolchain.
+
+- **Dev tooling is dev-only and hash-pinned** in `requirements-dev.txt`
+  (`ruff`, `pytest`, `pip-audit`), compiled from `requirements-dev.in` with
+  `uv pip compile --python-version 3.10 --universal --generate-hashes`. None of
+  it is imported by the tool; it never ships.
+- **Tests** live in `tests/` and load the hyphenated `dolphin-watch.py` via
+  `importlib` (the filename is not a valid module name). PCAP fixtures are
+  synthesised as raw bytes in `tests/conftest.py` — no capture tooling needed.
+  The sanitiser regression anchor
+  (`test_detectors.py::test_markup_payload_in_path_is_neutralised`) proves a
+  crafted markup payload in a packet path is stripped before it reaches the report.
+- **CI** (`.github/workflows/ci.yml`): ruff + `pip-audit --strict` + pytest on
+  Python 3.10/3.11/3.12, plus a SHA-pinned `security-gate` scan.
+- **Accepted findings**: `accepted-findings.toml` waives the synthetic injection
+  strings the gate flags inside test fixtures (SEC-TOOL-2). These are illustrative,
+  locally authored, and not real IOCs.
 
 ---
 

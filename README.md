@@ -47,7 +47,7 @@ Writes one timestamped JSON report per run to `--reports-dir` and prints a singl
 | # | Rule | Severity | Trigger |
 |---|---|---|---|
 | 1 | **External IP** | HIGH | Any non-localhost IP appears in agent traffic |
-| 2 | **Unknown endpoint** | HIGH | HTTP request to an endpoint not in the signed baseline |
+| 2 | **Unknown endpoint** | HIGH | HTTP request to an endpoint not in the baseline |
 | 3 | **Agentic danger endpoint** | HIGH | Any call to `POST /spawn_agent`, `POST /delegate_task`, or `POST /execute_bash` |
 | 4 | **Budget polling too fast** | HIGH | `GET /budget` interval drops below minimum (3s normal / 10s strict) |
 | 5 | **createSignature hard cap** | HIGH | `POST /createSignature` exceeds 150 RPM |
@@ -57,7 +57,7 @@ Writes one timestamped JSON report per run to `--reports-dir` and prints a singl
 | 9 | **Task without chat** | MEDIUM | A new task ID appears without a preceding `POST /chat` within 2 minutes |
 | 10 | **Health interval deviation** | MEDIUM | `GET /health` median polling interval deviates more than 15s from the 30s baseline |
 
-Baseline endpoints are defined as a signed frozenset in source. Any endpoint not in the set is flagged HIGH regardless of rate.
+Baseline endpoints are defined as an immutable `frozenset` hardcoded in source (immutable at runtime, not cryptographically signed). Any endpoint not in the set is flagged HIGH regardless of rate.
 
 ## OWASP Agentic Top 10 2026 coverage
 

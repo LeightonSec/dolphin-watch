@@ -6,7 +6,6 @@ Parses PCAP files, extracts HTTP endpoints, compares against a known baseline,
 and generates structured JSON anomaly reports. Zero network calls. Zero payload logging.
 """
 
-import os
 import re
 import sys
 import json

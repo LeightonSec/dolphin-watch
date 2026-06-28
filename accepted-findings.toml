@@ -1,0 +1,44 @@
+# Accepted findings for dolphin-watch.
+# Each entry removes a finding from gate consideration — severity stays visible
+# in the report. Required fields: scanner, file, match (substring), rationale,
+# reviewer, date.
+#
+# All waived findings are the security_tool scanner flagging synthetic injection
+# strings inside test fixtures (checklist SEC-TOOL-2: "Test fixtures contain no
+# real exploit payloads"). These payloads are illustrative, locally constructed,
+# and exist solely to prove the endpoint sanitiser strips markup/shell/quoting
+# metacharacters before any packet-derived value reaches the JSON report. None is
+# a real IOC or derived from a real attack. The sanitiser regression anchor is in
+# tests/test_detectors.py::test_markup_payload_in_path_is_neutralised.
+
+[[accepted]]
+scanner   = "security_tool"
+file      = "tests/test_detectors.py"
+match     = "evil = \"/<script>alert(1)</script>\""
+rationale = "Synthetic XSS payload used to assert that a crafted HTTP path in a PCAP is neutralised to 'GET /scriptalert1/script' before reaching the report. Not a real IOC; locally authored regression fixture."
+reviewer  = "leighton"
+date      = "2026-06-28"
+
+[[accepted]]
+scanner   = "security_tool"
+file      = "tests/test_sanitize.py"
+match     = "\"/<script>alert(1)</script>\","
+rationale = "Synthetic XSS payload in a parametrised sanitiser test asserting markup characters are stripped. Not a real IOC; locally authored regression fixture."
+reviewer  = "leighton"
+date      = "2026-06-28"
+
+[[accepted]]
+scanner   = "security_tool"
+file      = "tests/test_sanitize.py"
+match     = "'/\"><img src=x onerror=alert(1)>',"
+rationale = "Synthetic attribute-breakout XSS payload asserting quote/angle-bracket stripping. Not a real IOC; locally authored regression fixture."
+reviewer  = "leighton"
+date      = "2026-06-28"
+
+[[accepted]]
+scanner   = "security_tool"
+file      = "tests/test_sanitize.py"
+match     = "\"/'; DROP TABLE x;--\","
+rationale = "Synthetic SQL-injection-shaped payload asserting quote/semicolon stripping. The sanitiser output feeds JSON/baseline comparison only — never a database. Not a real IOC; locally authored regression fixture."
+reviewer  = "leighton"
+date      = "2026-06-28"
