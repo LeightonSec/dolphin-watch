@@ -49,7 +49,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install security-gate (SHA-pinned)
-        run: pip install "git+https://github.com/LeightonSec/security-gate@531d618231269b490fd2800484aee7e0feebca38"
+        run: pip install "git+https://github.com/LeightonSec/security-gate@c52a8b56b3e164f9854c646bedb5d9e70446d98e"
 
       - name: Static security gate
         run: security-gate scan . --exit-code
