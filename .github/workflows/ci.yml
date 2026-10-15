@@ -32,7 +32,10 @@ jobs:
         run: ruff check .
 
       - name: Audit dev dependencies
-        run: pip-audit --strict
+        # Audit the hash-pinned lockfile, not the runner's environment: env mode
+        # also audits runner-preinstalled tooling (e.g. setuptools on 3.10/3.11)
+        # that is not part of this project's dependency set.
+        run: pip-audit --strict --disable-pip -r requirements-dev.txt
 
       - name: Run tests
         # The tool itself is stdlib-only; tests load dolphin-watch.py via importlib.
