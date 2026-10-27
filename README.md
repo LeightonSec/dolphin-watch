@@ -8,7 +8,7 @@ BSV agent infrastructure has no security observability layer. Agents make HTTP c
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.11+
 - No external dependencies — stdlib only
 
 ## Usage

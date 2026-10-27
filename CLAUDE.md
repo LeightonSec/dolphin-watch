@@ -119,7 +119,7 @@ Use strict mode for production alerting where false negatives are unacceptable.
 
 ## Tech Stack
 
-- Python 3.10+ (stdlib only)
+- Python 3.11+ (stdlib only)
 - Shell (capture-baseline.sh)
 
 ---
@@ -133,7 +133,7 @@ development toolchain.
 
 - **Dev tooling is dev-only and hash-pinned** in `requirements-dev.txt`
   (`ruff`, `pytest`, `pip-audit`), compiled from `requirements-dev.in` with
-  `uv pip compile --python-version 3.10 --universal --generate-hashes`. None of
+  `uv pip compile --python-version 3.11 --universal --generate-hashes`. None of
   it is imported by the tool; it never ships.
 - **Tests** live in `tests/` and load the hyphenated `dolphin-watch.py` via
   `importlib` (the filename is not a valid module name). PCAP fixtures are
@@ -142,7 +142,7 @@ development toolchain.
   (`test_detectors.py::test_markup_payload_in_path_is_neutralised`) proves a
   crafted markup payload in a packet path is stripped before it reaches the report.
 - **CI** (`.github/workflows/ci.yml`): ruff + `pip-audit --strict` + pytest on
-  Python 3.10/3.11/3.12, plus a SHA-pinned `security-gate` scan.
+  Python 3.11/3.12, plus a SHA-pinned `security-gate` scan.
 - **Accepted findings**: `accepted-findings.toml` waives the synthetic injection
   strings the gate flags inside test fixtures (SEC-TOOL-2). These are illustrative,
   locally authored, and not real IOCs.
